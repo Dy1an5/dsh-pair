@@ -1,0 +1,8 @@
+node_modules/
+.npm-cache/
+*.tgz
+*.log
+.DS_Store
+
+# Manual browser checks write screenshots here.
+test/manual/shots/

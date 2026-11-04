@@ -1,0 +1,17 @@
+# The mobile access bundle: one Host plugin (pairing + HTTP API + static app)
+# and one Client plugin (the "手机连接" Sidebar page).
+#
+# `appDir` points at the phone UI. Relative paths resolve against this plugin's
+# own directory, and the UI ships inside it (static files, no build step):
+#
+#   dsh-pair/
+#   ├── index.js, client.js, ...   the Host plugin
+#   └── app/                       the phone UI
+- insert:
+    - id: mobile
+      name: 'dsh-pair'
+      config:
+        appDir: ./app
+        pairTtlMinutes: 10
+        cookieDays: 30
+        maxDevices: 8

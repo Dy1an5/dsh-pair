@@ -1,0 +1,71 @@
+{
+  "name": "dsh-pair",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "LAN pairing and remote mobile access for DeepSeek Harness: QR code, phone pairing, workspace and session browsing, chat from the phone.",
+  "license": "MIT",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "install.mjs",
+    "bin/",
+    "app/",
+    "vendor/",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "mobile",
+    "lan",
+    "pairing",
+    "pwa"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "dsh-pair-install": "./install.mjs",
+    "dsh-pair-serve": "./bin/dsh-pair-serve.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/plugin.test.js test/package.test.js test/serve.test.js test/install.test.js",
+    "install:dry": "node install.mjs --dry-run",
+    "pack:check": "npm pack --dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dy1an5/dsh-pair.git"
+  },
+  "homepage": "https://github.com/Dy1an5/dsh-pair#readme",
+  "bugs": {
+    "url": "https://github.com/Dy1an5/dsh-pair/issues"
+  }
+}
