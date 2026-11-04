@@ -51,6 +51,17 @@ npx dsh-pair-install                          # 2. add the bundle entry
 dsh web --host <your LAN IP>                    # 3. restart
 ```
 
+**From a GitHub release (no npm account needed yet)**
+
+Until the package is on npm, download the tarball from the
+[releases page](https://github.com/Dy1an5/dsh-pair/releases) and install it by path:
+
+```bash
+dsh plugin --profile web add ./dsh-pair-0.1.0.tgz   # same three steps, local file
+npx dsh-pair-install
+dsh web --host <your LAN IP>
+```
+
 Or let the launcher find a reachable address for you — it binds the first LAN address a phone
 can actually reach, using the same detection as the plugin (docker / veth / tun addresses are
 skipped):

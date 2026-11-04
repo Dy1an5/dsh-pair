@@ -45,6 +45,17 @@ npx dsh-pair-install                                # 2. 写 bundle 条目
 dsh web --host <你的局域网 IP>                          # 3. 重启
 ```
 
+**从 GitHub Release 安装（还没有 npm 账号时）**
+
+包里还没上 npm 的时候，从 [Releases 页面](https://github.com/Dy1an5/dsh-pair/releases) 下载
+tarball，按本地文件装：
+
+```bash
+dsh plugin --profile web add ./dsh-pair-0.1.0.tgz   # 还是同样三步，换成本地文件
+npx dsh-pair-install
+dsh web --host <你的局域网 IP>
+```
+
 懒得记 `--host` 就用法器（启动器）——它挑第一个「手机真的能连上」的局域网地址，用的是和插件
 同一套探测逻辑，docker / veth / tun 那些会被跳过：
 
