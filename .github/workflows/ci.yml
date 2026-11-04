@@ -3,7 +3,6 @@ name: ci
 on:
   push:
     branches: [main]
-    tags: ['v*']
   pull_request:
 
 permissions:
@@ -36,23 +35,3 @@ jobs:
       - name: Check the tarball would be publishable
         run: npm pack --dry-run
 
-  tarball:
-    name: tarball
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Build the package
-        run: npm pack
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dsh-pair-tgz
-          path: '*.tgz'
-          if-no-files-found: error

@@ -151,6 +151,24 @@ After restarting `dsh web`:
 > `connection.admit()`, i.e. it requires the current Harness session cookie — someone else on
 > the LAN cannot open that address, so they cannot obtain the token either.
 
+## Releasing
+
+One tag drives the whole release — CI runs the suites, publishes to npm with provenance, and
+creates the GitHub release with the tarball attached:
+
+```bash
+npm version patch          # or minor / major; commits and tags locally
+git push --follow-tags
+```
+
+The workflow refuses to publish when the tag and `package.json` version disagree, so bumping the
+version is the only thing to remember. It authenticates with the `NPM_TOKEN` repository secret.
+
+Two registry quirks worth knowing: the first publish of a brand-new name is accepted
+asynchronously (the CLI prints `+ dsh-pair@x.y.z` before `npm view` can see it), and tokens that
+bypass 2FA lose direct publish in January 2027 — at that point switch to trusted publishing
+(OIDC) and drop `NODE_AUTH_TOKEN` from the workflow.
+
 ## Configuration
 
 | Field | Default | Meaning |
