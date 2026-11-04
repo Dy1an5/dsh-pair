@@ -1,5 +1,7 @@
 # dsh-pair — 手机扫码连接 DeepSeek Harness
 
+[![ci](https://github.com/Dy1an5/dsh-pair/actions/workflows/ci.yml/badge.svg)](https://github.com/Dy1an5/dsh-pair/actions/workflows/ci.yml)
+
 [English](README.md) | **中文**
 
 给 DeepSeek Harness 加一条「手机通道」：电脑上显示二维码，手机扫一下就连到同一个局域网里的

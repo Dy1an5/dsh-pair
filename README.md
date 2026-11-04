@@ -1,5 +1,7 @@
 # dsh-pair — pair a phone with DeepSeek Harness by QR
 
+[![ci](https://github.com/Dy1an5/dsh-pair/actions/workflows/ci.yml/badge.svg)](https://github.com/Dy1an5/dsh-pair/actions/workflows/ci.yml)
+
 **English** | [中文](README.zh.md)
 
 A phone channel for DeepSeek Harness: the desktop shows a QR code, the phone scans it and
