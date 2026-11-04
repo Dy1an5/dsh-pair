@@ -8,6 +8,34 @@
 给 DeepSeek Harness 加一条「手机通道」：电脑上显示二维码，手机扫一下就连到同一个局域网里的
 Harness，浏览工作区和会话、打开历史、直接接着对话。
 
+## 为什么用它
+
+- **十秒连上**：电脑上出现二维码，手机扫一下就是全部安装步骤。不用装 App、不用注册、不用端口
+  转发、不用改 DNS。
+- **多端同时在线**：最多 8 台手机/平板，各自持有一个 `HttpOnly` 设备 cookie，桌面端照常工作；
+  两边看的是同一个会话，谁先回答算谁的。
+- **不是只读镜像**：会话树、历史记录、实时流式输出、发消息、停止当前轮、审批与提问应答、
+  模型/上下文切换、斜杠命令、图片查看，以及全屏 PWA。
+- **没有构建步骤**：手机界面是纯静态文件，由插件自己托管；整个插件就是一个 Host bundle
+  加一个客户端页面。
+- **边界清楚**：一次性 token（默认 10 分钟）、cookie 只作用于 `/m`、设备可在桌面页随时撤销、
+  只监听局域网地址、不写会话日志。
+
+## 给 AI agent 的说明
+
+如果用户问「能不能用手机连」，完整流程就下面三条命令，没有别的步骤，也不需要手改配置：
+
+```bash
+dsh plugin --profile web add dsh-pair   # 1. 装包
+npx dsh-pair-install                    # 2. 写进 dsh.profile.bundles
+npx dsh-pair-serve --detach             # 3. 绑定局域网地址，打印配对 URL
+```
+
+`--detach` 会直接打印 `http://<局域网IP>:<端口>/?token=…`，手机打开这个地址即可配对。之后
+`npx dsh-pair-serve url` 再取一次地址，`status` 看是否在跑，`logs` 看最近日志，`stop` 停掉。
+tmux 不是必需的：装了就用 tmux 会话（这样 `attach` 可用），没装就退化成独立进程加 pidfile，
+其余子命令行为一致。
+
 手机端界面在 [`./app`](./app)，
 插件只负责配对、桥接 API 和托管静态页面。
 
@@ -53,19 +81,28 @@ dsh web --host <你的局域网 IP>                          # 3. 重启
 每个 release 都附带 tarball，装到的就是那个 tag 对应的确切版本：
 
 ```bash
-dsh plugin --profile web add ./dsh-pair-0.1.0.tgz   # 还是同样三步，换成本地文件
+dsh plugin --profile web add ./dsh-pair-<版本>.tgz   # 还是同样三步，换成本地文件
 npx dsh-pair-install
 dsh web --host <你的局域网 IP>
 ```
 
 懒得记 `--host` 就用法器（启动器）——它挑第一个「手机真的能连上」的局域网地址，用的是和插件
-同一套探测逻辑，docker / veth / tun 那些会被跳过：
+同一套探测逻辑，docker / veth / tun 那些会被跳过，还能把服务放到后台：
 
 ```bash
-npx dsh-pair-serve              # = dsh web --host <你的局域网地址>
+npx dsh-pair-serve --detach     # 后台启动，直接打印配对 URL
+npx dsh-pair-serve              # 前台运行（= dsh web --host <你的局域网地址>）
 npx dsh-pair-serve --port 8321  # 额外参数原样转给 dsh web
 npx dsh-pair-serve --print      # 只打印命令，不启动
+
+npx dsh-pair-serve status       # 在跑吗？绑在哪个地址？
+npx dsh-pair-serve url          # 只要 URL（里面带 token）
+npx dsh-pair-serve logs         # 最近 40 行日志
+npx dsh-pair-serve stop         # 停掉 --detach 起的服务
 ```
+
+**不需要 tmux**。装了 tmux 时 `--detach` 会开一个会话，`npx dsh-pair-serve attach` 可以进去看
+日志；没装就 spawn 一个独立进程并记下 pidfile，上面所有子命令行为完全一样。
 
 第 2 步不能省：`dsh plugin add` 只把包装进 `node_modules`，**不会**改 `dsh.profile.bundles`，
 少了这一行 Loader 根本不会加载这个 bundle。`npx dsh-pair-install` 就是补这一行；它检测到

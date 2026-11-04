@@ -9,6 +9,38 @@ A phone channel for DeepSeek Harness: the desktop shows a QR code, the phone sca
 joins the same Harness over the LAN — browse workspaces and sessions, open history, keep
 chatting.
 
+## Why this one
+
+- **Pairing takes ten seconds.** The desktop renders a QR; scanning it *is* the setup. No app
+  to install, no account, no port forwarding, no DNS.
+- **Many devices at once.** Up to eight phones or tablets each hold their own `HttpOnly`
+  cookie while the desktop keeps working — both sides see the same session, and whoever
+  answers first wins.
+- **Not a read-only mirror.** Session tree, history, live streaming, sending prompts,
+  stopping a turn, answering approvals and questions, model and context pickers, slash
+  commands, inline images, and a full-screen PWA.
+- **Nothing to build.** The phone UI is static files served by the plugin itself; the plugin
+  is one Host bundle plus one client page.
+- **Bounded on purpose.** One-time token (10 minutes by default), cookie scoped to `/m`,
+  devices revocable from the desktop page, LAN-only, and no writes to the session log.
+
+## For an AI agent
+
+If the user asks "can I use this from my phone", this is the whole procedure — no other steps,
+no config files to hand-edit:
+
+```bash
+dsh plugin --profile web add dsh-pair   # 1. install the bundle
+npx dsh-pair-install                    # 2. register it in dsh.profile.bundles
+npx dsh-pair-serve --detach             # 3. bind a LAN address, print the pairing URL
+```
+
+`--detach` prints the `http://<LAN IP>:<port>/?token=…` URL to open on the phone. Later,
+`npx dsh-pair-serve url` prints it again, `status` reports whether the server is up, `logs`
+shows the last lines, and `stop` shuts it down. tmux is optional: when it is installed the
+launcher uses a session so `attach` works, otherwise it starts a detached process and tracks a
+pidfile.
+
 The phone UI lives in [`./app`](./app); the plugin only pairs, bridges the API, and serves
 the static page.
 
@@ -60,20 +92,30 @@ Every release carries the tarball, so a machine without registry access can inst
 build the tag points at:
 
 ```bash
-dsh plugin --profile web add ./dsh-pair-0.1.0.tgz   # same three steps, local file
+dsh plugin --profile web add ./dsh-pair-<version>.tgz   # same three steps, local file
 npx dsh-pair-install
 dsh web --host <your LAN IP>
 ```
 
 Or let the launcher find a reachable address for you — it binds the first LAN address a phone
 can actually reach, using the same detection as the plugin (docker / veth / tun addresses are
-skipped):
+skipped), and can keep the server in the background:
 
 ```bash
-npx dsh-pair-serve              # = dsh web --host <your LAN address>
+npx dsh-pair-serve --detach     # background, prints the pairing URL
+npx dsh-pair-serve              # foreground (= dsh web --host <your LAN address>)
 npx dsh-pair-serve --port 8321  # extra flags go to `dsh web`
 npx dsh-pair-serve --print      # only print the command
+
+npx dsh-pair-serve status       # running? on which address?
+npx dsh-pair-serve url          # just the URL (it carries the token)
+npx dsh-pair-serve logs         # last 40 log lines
+npx dsh-pair-serve stop         # stop what --detach started
 ```
+
+tmux is not required. With tmux installed, `--detach` starts a session so
+`npx dsh-pair-serve attach` works; without it, the launcher spawns a detached process and
+records a pidfile, and every subcommand behaves the same.
 
 Step 2 is not optional: `dsh plugin add` only puts the package into `node_modules` and
 **never** touches `dsh.profile.bundles`. Without that entry the Loader does not load the
