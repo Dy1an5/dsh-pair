@@ -1,6 +1,7 @@
 # dsh-pair — 手机扫码连接 DeepSeek Harness
 
 [![ci](https://github.com/Dy1an5/dsh-pair/actions/workflows/ci.yml/badge.svg)](https://github.com/Dy1an5/dsh-pair/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/dsh-pair.svg)](https://www.npmjs.com/package/dsh-pair)
 
 [English](README.md) | **中文**
 
@@ -39,7 +40,7 @@ DeepSeek Harness 本身已经能在局域网上跑 Web GUI（`dsh web --host <�
 
 ## 安装
 
-**从 npm 安装（发布后的目标形态）**
+**从 npm 安装**
 
 ```bash
 dsh plugin --profile web add dsh-pair               # 1. 装依赖（转发给 pnpm）
@@ -47,10 +48,9 @@ npx dsh-pair-install                                # 2. 写 bundle 条目
 dsh web --host <你的局域网 IP>                          # 3. 重启
 ```
 
-**从 GitHub Release 安装（还没有 npm 账号时）**
+**从 GitHub Release 安装（锁定某个构建，或没有 registry 访问）**
 
-包里还没上 npm 的时候，从 [Releases 页面](https://github.com/Dy1an5/dsh-pair/releases) 下载
-tarball，按本地文件装：
+每个 release 都附带 tarball，装到的就是那个 tag 对应的确切版本：
 
 ```bash
 dsh plugin --profile web add ./dsh-pair-0.1.0.tgz   # 还是同样三步，换成本地文件

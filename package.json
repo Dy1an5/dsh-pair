@@ -52,8 +52,8 @@
     "access": "public"
   },
   "bin": {
-    "dsh-pair-install": "./install.mjs",
-    "dsh-pair-serve": "./bin/dsh-pair-serve.mjs"
+    "dsh-pair-install": "install.mjs",
+    "dsh-pair-serve": "bin/dsh-pair-serve.mjs"
   },
   "scripts": {
     "test": "node --test test/plugin.test.js test/package.test.js test/serve.test.js test/install.test.js",

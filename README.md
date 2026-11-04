@@ -1,6 +1,7 @@
 # dsh-pair — pair a phone with DeepSeek Harness by QR
 
 [![ci](https://github.com/Dy1an5/dsh-pair/actions/workflows/ci.yml/badge.svg)](https://github.com/Dy1an5/dsh-pair/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/dsh-pair.svg)](https://www.npmjs.com/package/dsh-pair)
 
 **English** | [中文](README.zh.md)
 
@@ -45,7 +46,7 @@ phone". This plugin adds both:
 
 ## Install
 
-**From npm (the intended shape after publishing)**
+**From npm**
 
 ```bash
 dsh plugin --profile web add dsh-pair   # 1. install the dependency (forwarded to pnpm)
@@ -53,10 +54,10 @@ npx dsh-pair-install                          # 2. add the bundle entry
 dsh web --host <your LAN IP>                    # 3. restart
 ```
 
-**From a GitHub release (no npm account needed yet)**
+**From a GitHub release (pinned build, or offline)**
 
-Until the package is on npm, download the tarball from the
-[releases page](https://github.com/Dy1an5/dsh-pair/releases) and install it by path:
+Every release carries the tarball, so a machine without registry access can install the exact
+build the tag points at:
 
 ```bash
 dsh plugin --profile web add ./dsh-pair-0.1.0.tgz   # same three steps, local file
