@@ -20,7 +20,6 @@ import { promisify } from 'node:util'
 const run = promisify(execFile)
 const INSTALLER = fileURLToPath(new URL('../install.mjs', import.meta.url))
 const ROOT = dirname(INSTALLER)
-const NEIGHBOUR = fileURLToPath(new URL('../../dsh-oil-git', import.meta.url))
 
 /** A throwaway `$DSH_HOME` holding one `web` profile. */
 async function profileHome() {
@@ -72,25 +71,31 @@ describe('installer', () => {
 
   it('leaves another live checkout alone', async () => {
     const { home, json, modules } = await profileHome()
+    // A sibling plugin that still exists on disk. It must be built here rather than
+    // borrowed from the developer's checkout: CI has no `../dsh-oil-git`, and a
+    // test that silently depends on one machine's layout fails only in CI.
+    const neighbour = join(home, 'plugins', 'dsh-oil-git')
+    await mkdir(neighbour, { recursive: true })
+    await writeFile(join(neighbour, 'package.json'), '{"name":"dsh-oil-git"}\n')
     await writeFile(
       json,
       `${JSON.stringify(
         {
           name: 'dsh-profile-web',
           private: true,
-          dependencies: { '@local/dsh-oil-git': `link:${NEIGHBOUR}` },
+          dependencies: { '@local/dsh-oil-git': `link:${neighbour}` },
           dsh: { profile: { bundles: ['@local/dsh-oil-git'] } },
         },
         null,
         2,
       )}\n`,
     )
-    await symlink(NEIGHBOUR, join(modules, '@local', 'dsh-oil-git'))
+    await symlink(neighbour, join(modules, '@local', 'dsh-oil-git'))
 
     await install(home)
 
     const manifest = await readManifest(json)
-    assert.equal(manifest.dependencies['@local/dsh-oil-git'], `link:${NEIGHBOUR}`)
+    assert.equal(manifest.dependencies['@local/dsh-oil-git'], `link:${neighbour}`)
     assert.deepEqual(manifest.dsh.profile.bundles, ['@local/dsh-oil-git', 'dsh-pair'])
   })
 
