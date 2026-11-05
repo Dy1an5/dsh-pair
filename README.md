@@ -215,6 +215,10 @@ git push --follow-tags
 The workflow refuses to publish when the tag and `package.json` version disagree, so bumping the
 version is the only thing to remember. It authenticates with the `NPM_TOKEN` repository secret.
 
+**Versioning rule:** a bug fix bumps only the third digit (`0.2.1` → `0.2.2`); a new capability
+bumps the second (`0.2.x` → `0.3.0`); a breaking change bumps the first. Documentation-only
+commits need no release at all — they ride along with the next one.
+
 Two registry quirks worth knowing: the first publish of a brand-new name is accepted
 asynchronously (the CLI prints `+ dsh-pair@x.y.z` before `npm view` can see it), and tokens that
 bypass 2FA lose direct publish in January 2027 — at that point switch to trusted publishing
