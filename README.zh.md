@@ -104,6 +104,15 @@ npx dsh-pair-serve stop         # 停掉 --detach 起的服务
 **不需要 tmux**。装了 tmux 时 `--detach` 会开一个会话，`npx dsh-pair-serve attach` 可以进去看
 日志；没装就 spawn 一个独立进程并记下 pidfile，上面所有子命令行为完全一样。
 
+不想每天重复敲参数，就写进 `$DSH_HOME/dsh-pair.json`：
+
+```json
+{ "port": 8321, "detach": true }
+```
+
+之后直接 `dsh-pair-serve` 就是「后台启动 + 8321 + 打印配对 URL」。`dsh-pair-serve config` 可以
+看它读的是哪个文件，命令行上显式传的参数仍然优先。
+
 第 2 步不能省：`dsh plugin add` 只把包装进 `node_modules`，**不会**改 `dsh.profile.bundles`，
 少了这一行 Loader 根本不会加载这个 bundle。`npx dsh-pair-install` 就是补这一行；它检测到
 自己已在 `<profile>/node_modules` 里，所以只写清单、不软链。

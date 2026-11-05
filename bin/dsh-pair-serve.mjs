@@ -17,7 +17,12 @@
  * detached process gives you the same background behaviour on machines without it.
  * Either way the URL lands in the log, which `url` and `status` read back.
  *
- * `DSH_PAIR_HOST` / `DSH_PAIR_PORT` do the same as the flags.
+ * `DSH_PAIR_HOST` / `DSH_PAIR_PORT` do the same as the flags. Anything you would
+ * otherwise retype every day belongs in `$DSH_HOME/dsh-pair.json`:
+ *
+ *   { "port": 8321, "detach": true }
+ *
+ * Flags win over environment, which wins over the file, which wins over detection.
  */
 import { spawn, spawnSync } from 'node:child_process'
 import { mkdirSync, openSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs'
@@ -27,7 +32,7 @@ import { lanAddresses } from '../index.js'
 
 const argv = process.argv.slice(2)
 const forwarded = []
-const commands = new Set(['start', 'run', 'status', 'url', 'logs', 'log', 'stop', 'attach'])
+const commands = new Set(['start', 'run', 'status', 'url', 'logs', 'log', 'stop', 'attach', 'config'])
 let command = 'run'
 let host
 let port
@@ -58,9 +63,29 @@ for (let index = 0; index < argv.length; index += 1) {
 }
 
 const dshHome = process.env.DSH_HOME ?? join(os.homedir(), '.dsh')
+const configPath = join(dshHome, 'dsh-pair.json')
 const logPath = process.env.DSH_PAIR_LOG ?? join(dshHome, 'dsh-pair.log')
 const pidPath = join(dshHome, 'dsh-pair.pid')
 const SESSION = process.env.DSH_PAIR_SESSION ?? 'dsh-pair'
+
+/** Saved defaults; a missing file is simply "no defaults yet". */
+function readConfig() {
+  let text
+  try {
+    text = readFileSync(configPath, 'utf8')
+  } catch {
+    return {}
+  }
+  try {
+    const parsed = JSON.parse(text)
+    return parsed !== null && typeof parsed === 'object' ? parsed : {}
+  } catch (error) {
+    console.error(`dsh-pair-serve: ignoring ${configPath}: ${error.message}`)
+    return {}
+  }
+}
+
+const config = readConfig()
 
 /** Whether a command exists on PATH. */
 const has = name => spawnSync(name, ['-V'], { stdio: 'ignore' }).status === 0
@@ -113,8 +138,19 @@ async function awaitUrl(timeoutMs = 20_000) {
   return undefined
 }
 
-host = host ?? process.env.DSH_PAIR_HOST ?? lanAddresses()[0]
-port = port ?? process.env.DSH_PAIR_PORT
+host = host ?? process.env.DSH_PAIR_HOST ?? config.host ?? lanAddresses()[0]
+port = port ?? process.env.DSH_PAIR_PORT ?? config.port
+if (!detach && config.detach === true) detach = true
+
+if (command === 'config') {
+  console.log(configPath)
+  if (Object.keys(config).length === 0) {
+    console.error('dsh-pair-serve: no defaults yet — write one, e.g. {"port": 8321, "detach": true}')
+  } else {
+    console.log(JSON.stringify(config, null, 2))
+  }
+  process.exit(0)
+}
 
 const webArgs = ['web', '--host', host, ...(port === undefined ? [] : ['--port', String(port)]), ...forwarded]
 const printable = ['dsh', ...webArgs].join(' ')

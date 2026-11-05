@@ -117,6 +117,15 @@ tmux is not required. With tmux installed, `--detach` starts a session so
 `npx dsh-pair-serve attach` works; without it, the launcher spawns a detached process and
 records a pidfile, and every subcommand behaves the same.
 
+Anything you would otherwise retype every day lives in `$DSH_HOME/dsh-pair.json`:
+
+```json
+{ "port": 8321, "detach": true }
+```
+
+With that, plain `dsh-pair-serve` starts in the background on 8321 and prints the pairing URL.
+`dsh-pair-serve config` shows the file it reads, and an explicit flag still wins over it.
+
 Step 2 is not optional: `dsh plugin add` only puts the package into `node_modules` and
 **never** touches `dsh.profile.bundles`. Without that entry the Loader does not load the
 bundle at all. `npx dsh-pair-install` adds it; it notices it already lives inside
