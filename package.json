@@ -1,6 +1,6 @@
 {
   "name": "dsh-pair",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "LAN pairing and remote mobile access for DeepSeek Harness: QR code, phone pairing, workspace and session browsing, chat from the phone.",
   "license": "MIT",
