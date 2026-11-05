@@ -1,5 +1,8 @@
 node_modules/
 .npm-cache/
+
+# Local-only maintainer notes for coding agents; README is what users read.
+AGENTS.md
 *.tgz
 *.log
 .DS_Store

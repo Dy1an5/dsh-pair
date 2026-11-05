@@ -183,27 +183,6 @@ npm pack --dry-run       # 看将要发布的文件清单（应该只有 19 个�
 > `connection.admit()`，也就是要求浏览器带着当前 Harness 的会话 cookie——局域网里
 > 其他人打不开这个地址，也就拿不到 token。
 
-## 发布
-
-打一个 tag 就走完整个发布——CI 跑测试、带 provenance 发布到 npm、并建好 GitHub Release 把
-tarball 挂上去：
-
-```bash
-npm version patch          # 或 minor / major，本地提交并打 tag
-git push --follow-tags
-```
-
-tag 与 `package.json` 版本不一致时工作流会拒绝发布，所以只需要记住改版本号这一件事。认证用的是
-仓库里的 `NPM_TOKEN` secret。
-
-**版本规则**：修 bug 只动第三位（`0.2.1` → `0.2.2`）；加新功能动第二位（`0.2.x` → `0.3.0`）；
-破坏性改动动第一位。纯文档提交不用发版，跟着下一次一起走。
-
-两个 registry 的坑值得记一下：全新包名的首次发布是**异步受理**的（CLI 已经打印
-`+ dsh-pair@x.y.z`，但 `npm view` 可能还要等一两分钟才能看到），以及 2027 年 1 月起
-bypass-2FA 令牌会失去直接发布能力——到那时把工作流切到 trusted publishing（OIDC），去掉
-`NODE_AUTH_TOKEN` 即可。
-
 ## 配置
 
 | 字段 | 默认值 | 含义 |
