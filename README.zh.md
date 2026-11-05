@@ -127,34 +127,7 @@ node install.mjs          # 加 --dry-run 只看计划；--profile 指定别的 
 `<profile>/node_modules/<包名>`，再把依赖记成 `link:…` 并补 bundle 条目。
 两种模式都不动 `cordis.patch.yml`——插入行来自本包自己的 `dsh.bundle.patch`。
 
-## 发布前检查
-
-`npm test` 里有一组**打包守卫**（`test/package.test.js`），跑的是“要发布的包内容完不完整”，
-不是行为测试。它守的是那种静默失败：`files` 曾经漏掉 `app/`，`npm publish` 出去的包里
-没有手机界面，而本地因为是 `link:` 挂载完全看不出来。守卫覆盖：
-
-- `private` 必须去掉（否则 npm 拒绝发布）、有 `LICENSE`
-- `app/` 及其入口资源必须在 `files` 里，且文件真实存在
-- `exports` / `bin` 指向的文件都要真的会被打进包
-- `dsh.bundle.patch` 指向的 YAML 存在、含 `insert:`
-- `test/`、`docs/` 不能进包；`vendor/` 和它的 `NOTICE.md` 必须进
-
-发布前手动过一遍：
-
-```bash
-npm test                 # 56 个用例
-npm pack --dry-run       # 看将要发布的文件清单（应该只有 19 个文件、约 191 KB）
-```
-
-`npm pack --dry-run` 在只读的 `$HOME` 下会因为 `~/.npm/_cacache` 不可写而失败，可以临时
-`npm_config_cache=$PWD/.npm-cache npm pack --dry-run`。
-
-`repository` / `homepage` / `bugs` 已指向发布仓库；README 里的截图用绝对
-`raw.githubusercontent.com` 地址，因为 **npmjs.com 不渲染相对图片**。
-
-`name` 是 `dsh-pair`。将来若要改名，只改这一处再跑 `node install.mjs` 即可——脚本会发现 profile
-里指向本目录的旧 `link:` 依赖（以及指向已不存在目录的那种）连同它的 bundle 条目和失效的
-`node_modules` 软链一起清掉，不会留下加载不到的条目。
+## 装好之后
 
 `package.json` 里的 `dsh.bundle.patch` 会自动把下面这行插进 web profile：
 

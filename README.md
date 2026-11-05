@@ -142,38 +142,7 @@ into `<profile>/node_modules/<package name>`, records the dependency as `link:â€
 bundle entry. Neither mode touches `cordis.patch.yml` â€” the insert comes from this package's
 own `dsh.bundle.patch`.
 
-## Before publishing
-
-`npm test` includes a set of **packaging guards** (`test/package.test.js`). They do not test
-behaviour; they test that the thing we would publish is complete. They exist for a silent
-failure: `files` once omitted `app/`, so a published package shipped without the phone UI and
-nothing local noticed, because development links the checkout instead of packing it. The
-guards cover:
-
-- `private` is gone (npm refuses private packages) and a `LICENSE` exists
-- `app/` and its entry assets are in `files` and really exist on disk
-- every file named by `exports` / `bin` would actually be packed
-- the YAML behind `dsh.bundle.patch` exists and contains an `insert:`
-- `test/` and `docs/` stay out of the tarball; `vendor/` and its `NOTICE.md` go in
-
-Run both before publishing:
-
-```bash
-npm test                 # 56 cases
-npm pack --dry-run       # the file list that would ship (19 files, ~191 KB)
-```
-
-Under a read-only `$HOME`, `npm pack --dry-run` fails because `~/.npm/_cacache` is not
-writable; use `npm_config_cache=$PWD/.npm-cache npm pack --dry-run`.
-
-`repository` / `homepage` / `bugs` point at the published repository, and the screenshots above
-use absolute `raw.githubusercontent.com` URLs because **npmjs.com does not render relative
-images**.
-
-The package name is `dsh-pair`. If you ever rename it, edit that one field and re-run
-`node install.mjs`: it drops any stale `link:` dependency that points at this directory or at one
-that no longer exists, together with its bundle entry and dangling `node_modules` symlink, so no
-unloadable row is left behind.
+## After installing
 
 `dsh.bundle.patch` inserts this row into the web profile:
 
